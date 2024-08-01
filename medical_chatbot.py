@@ -14,8 +14,8 @@ async def on_chat_start():
     elements = [
     cl.Image(name="image1", display="inline", path="gemma.jpeg")
     ]
-    await cl.Message(content="Hello there, I am Gemma. How can I help you ?", elements=elements).send()
-    model = Ollama(model="gemma:2b")
+    await cl.Message(content="Hello there, I am ur Virtual Doctor . How can I help you ?", elements=elements).send()
+    model = Ollama(model="biomistral:latest")
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -42,3 +42,27 @@ async def on_message(message: cl.Message):
         await msg.stream_token(chunk)
 
     await msg.send()
+
+
+
+def word_matching_feedback_system(user_text, reference_text):
+    preprocess = lambda text: [token.strip('.,!?') for token in text.lower().split()]
+    user_tokens, reference_tokens = preprocess(user_text), preprocess(reference_text)
+    
+    feedback = [f"Good job! You used the word '{word}'." if word in user_tokens else f"Try to include the word '{word}'." for word in reference_tokens]
+    
+    feedback.append(f"Overall similarity score: {calculate_similarity(user_text, reference_text):.2f}")
+    return feedback
+
+def calculate_similarity(text1, text2):
+    return 0.85  # Placeholder similarity score
+
+# Example Usage
+user_text = "The cat chased the mouse."
+reference_text = "The cat was chasing a mouse."
+feedback = word_matching_feedback_system(user_text, reference_text)
+for message in feedback:
+    print(message)
+
+
+
